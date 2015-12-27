@@ -1,7 +1,7 @@
 #include "Card.hpp"
 
 namespace Bilky{
-	Card::Card(Suit suit, uint8_t value){
+	Card::Card(Suit suit, uint32_t value){
 		m_suit = suit;
 		m_value = value;
 	}
@@ -17,7 +17,7 @@ namespace Bilky{
 		return m_suit;
 	}
 
-	uint8_t Card::GetValue() const{
+	uint32_t Card::GetValue() const{
 		return m_value;
 	}
 }

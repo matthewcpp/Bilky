@@ -9,18 +9,22 @@
 namespace Bilky{
 	class Player{
 	public:
-		Player(const std::string& name);
+		Player(const std::string& name, uint32_t id);
 
 	public:
 		void Reset();
-		uint8_t GetScore();
+		uint32_t GetScore();
 		std::string GetName() const;
+
+		uint32_t GetId() const;
+		void Setid(uint32_t id);
 
 		const ICardCollection* GetHand() const;
 		ICardCollection* Hand();
 
 	private:
-		uint8_t m_score;
+		uint32_t m_score;
+		uint32_t m_id;
 		std::string m_name;
 		CardCollection m_hand;	
 	};

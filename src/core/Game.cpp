@@ -9,7 +9,7 @@ namespace Bilky{
 	Player* Game::CreatePlayer(const std::string& name){
 		PlayerReference newPlayer;
 		if (m_gameState == State::Stopped){
-			newPlayer.reset(new Player(name));
+			newPlayer.reset(new Player(name, m_players.size()));
 			m_players.push_back(newPlayer);
 		}
 
@@ -43,10 +43,6 @@ namespace Bilky{
 
 		Reset();
 
-		//determine the player that will be starting
-		m_startingPlayer = rand() % m_players.size();
-		m_activePlayer = m_startingPlayer;
-
 		//setup the deck for this game
 		m_dealer.CreateCardPool(m_players.size());
 		
@@ -75,23 +71,51 @@ namespace Bilky{
 		m_activePlayer = 0;
 	}
 
-	void Game::NewRound(uint8_t handSize){
+	void Game::NewRound(uint32_t handSize){
 		SetState(State::DealingHands);
-
 		m_dealer.Reset();
 
-		Round* round = new Round(handSize);
+		//first round will start with a randomized lead player
+		if (m_rounds.size() == 0) {
+			m_startingPlayer = rand() % m_players.size();
+		}
+		else { //otherwise get the winner from the last round
+			m_startingPlayer = m_rounds.back()->GetWinningPlayer()->GetId();
+		}
+
+		m_activePlayer = m_startingPlayer;
+
+		Round* round = new Round(m_players[m_startingPlayer].get(), handSize);
 		RoundReference ref;
 		ref.reset(round);
 		m_rounds.push_back(ref);
 
-		for (uint8_t i = 0; i < handSize; i++){
+		//deal cards to players
+		for (uint32_t i = 0; i < handSize; i++){
 			for (auto& player : m_players){
 				m_dealer.DealCardToPlayer(player.get());
 			}
 		}
 
 		SetState(State::WaitingForDealerTrade);
+	}
+
+	void Game::NewTrick() {
+		RoundReference currentRound = m_rounds.back();
+		
+		//if this is the first trick in a round, then the player following the dealer goes first
+		if (currentRound->GetNumTricks() == 0) {
+			NextActivePlayer();
+			m_startingPlayer = m_activePlayer;
+		}
+		else { //get the winning player from the last trick
+			m_startingPlayer = currentRound->GetCurrentTrick()->GetWinningPlayer()->GetId();
+			m_activePlayer = m_startingPlayer;
+		}
+
+		currentRound->CreateTrick();
+
+		SetState(State::WaitingForActivePlayer);
 	}
 
 	Dealer* Game::GetDealer(){
@@ -150,7 +174,7 @@ namespace Bilky{
 			PerformCardTrade(activePlayer, cards);
 
 			if (m_activePlayer == m_startingPlayer)
-				SetState(State::WaitingForActivePlayer);
+				NewTrick();
 
 			return true;
 		}

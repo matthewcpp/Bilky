@@ -1,8 +1,9 @@
 #include "Player.hpp"
 
 namespace Bilky{
-	Player::Player(const std::string& name){
+	Player::Player(const std::string& name, uint32_t id){
 		m_name = name;
+		m_id = id;
 
 		Reset();
 	}
@@ -24,7 +25,15 @@ namespace Bilky{
 		return &m_hand;
 	}
 
-	uint8_t Player::GetScore(){
+	uint32_t Player::GetScore(){
 		return m_score;
+	}
+
+	uint32_t Player::GetId() const {
+		return m_id;
+	}
+
+	void Player::Setid(uint32_t id) {
+		m_id = id;
 	}
 }

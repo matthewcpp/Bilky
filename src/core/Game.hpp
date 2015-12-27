@@ -49,9 +49,9 @@ namespace Bilky {
 		void BindStateChangeCallback(StateChangeCallback callback);
 
 	private:
-		void NewRound(uint8_t handSize);
+		void NewRound(uint32_t handSize);
+		void NewTrick();
 		void Reset();
-		void SetupPlayOrder();
 
 		bool DealerTradeCards(const Player* player, ICardCollection* cards);
 		bool PlayerTradeCards(const Player* player, ICardCollection* cards);
@@ -61,7 +61,6 @@ namespace Bilky {
 		void NextActivePlayer();
 
 		virtual void SetState(State newState);
-		void OnCardDelt(Player* player, Card* card);
 
 	private:
 		typedef std::shared_ptr<Player> PlayerReference;
