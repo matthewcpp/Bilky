@@ -9,7 +9,6 @@
 #include "Player.hpp"
 #include "Card.hpp"
 #include "CardCollection.hpp"
-#include "DealInfo.hpp"
 
 namespace Bilky {
 	class Dealer{
