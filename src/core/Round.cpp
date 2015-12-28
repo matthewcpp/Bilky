@@ -54,7 +54,7 @@ namespace Bilky{
 		return m_tricks.size();
 	}
 
-	const Trick* Round::GetCurrentTrick() const {
+	Trick* Round::GetCurrentTrick() const {
 		if (m_tricks.size() > 0) {
 			return m_tricks[m_tricks.size() - 1].get();
 		}
@@ -63,7 +63,7 @@ namespace Bilky{
 		}
 	}
 
-	const Trick* Round::GetTrick(size_t index) const {
+	Trick* Round::GetTrick(size_t index) const {
 		if (index < m_tricks.size()) {
 			return m_tricks[index].get();
 		}
@@ -72,7 +72,7 @@ namespace Bilky{
 		}
 	}
 
-	const Player* Round::GetLeadPlayer() const {
+	Player* Round::GetLeadPlayer() const {
 		return m_leadPlayer;
 	}
 
@@ -80,11 +80,11 @@ namespace Bilky{
 		return m_isComplete;
 	}
 
-	void Round::SetComplete(bool complete) {
-		m_isComplete = complete;
+	void Round::SetComplete() {
+		m_isComplete = true;
 	}
 
-	const Player* Round::GetWinningPlayer() const {
+	Player* Round::GetWinningPlayer() const {
 		if (IsComplete()) {
 			return m_tricks.back()->GetWinningPlayer();
 		}

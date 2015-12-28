@@ -25,14 +25,14 @@ namespace Bilky{
 
 		Trick* CreateTrick();
 		size_t GetNumTricks() const;
-		const Trick* GetCurrentTrick() const;
-		const Trick* GetTrick(size_t index) const;
+		Trick* GetCurrentTrick() const;
+		Trick* GetTrick(size_t index) const;
 
-		const Player* GetLeadPlayer() const;
-		const Player* GetWinningPlayer() const;
+		Player* GetLeadPlayer() const;
+		Player* GetWinningPlayer() const;
 
 		bool IsComplete() const;
-		void SetComplete(bool complete = true);
+		void SetComplete();
 
 	private:
 		typedef std::shared_ptr<CardCollection> CardCollectionReference;

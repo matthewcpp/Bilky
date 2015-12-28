@@ -32,32 +32,38 @@ namespace Bilky {
 		bool Stop();
 
 		Player* CreatePlayer(const std::string& name);
+		Player* GetPlayer(size_t index) const;
 		size_t GetNumPlayers() const;
 
 		virtual State GetState() const;
 
 		Dealer* GetDealer();
 
-		const Round* GetCurrentRound();
-		const Round* GetRound(size_t index);
+		Round* GetCurrentRound() const;
+		Round* GetRound(size_t index);
 		size_t GetNumRounds() const;
 
-		const Player* GetActivePlayer();
+		Player* GetActivePlayer();
 
-		bool TradeCards(const Player* player, ICardCollection* cards);
+		bool TradeCards(Player* player, ICardCollection* cards);
+		bool PlayCard(Player* player, Card* card);
+		bool PlayIsValid(Player* player, Card* card) const;
 
 		void BindStateChangeCallback(StateChangeCallback callback);
 
 	private:
 		void NewRound(uint32_t handSize);
+		void RoundEnd();
+
 		void NewTrick();
+		void TrickEnd();
+
 		void Reset();
 
-		bool DealerTradeCards(const Player* player, ICardCollection* cards);
-		bool PlayerTradeCards(const Player* player, ICardCollection* cards);
+		bool DealerTradeCards(Player* player, ICardCollection* cards);
+		bool PlayerTradeCards(Player* player, ICardCollection* cards);
 		void PerformCardTrade(Player* player, ICardCollection* cards);
 
-		Player* ActivePlayer();
 		void NextActivePlayer();
 
 		virtual void SetState(State newState);

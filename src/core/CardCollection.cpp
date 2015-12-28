@@ -60,4 +60,15 @@ namespace Bilky{
 				m_cards.push_back(card);
 		}
 	}
+
+	bool CardCollection::Remove(Card* card) {
+		for (size_t i = 0; i < m_cards.size(); i++) {
+			if (m_cards[i] == card) {
+				m_cards.erase(m_cards.begin() + i);
+				return true;
+			}
+		}
+
+		return false;
+	}
 }

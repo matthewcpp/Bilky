@@ -16,6 +16,10 @@ namespace Bilky{
 		return newPlayer.get();
 	}
 
+	Player* Game::GetPlayer(size_t index) const {
+		return m_players[index].get();
+	}
+
 	size_t Game::GetNumPlayers() const{
 		return m_players.size();
 	}
@@ -24,12 +28,8 @@ namespace Bilky{
 		return m_gameState;
 	}
 
-	Player* Game::ActivePlayer(){
+	Player* Game::GetActivePlayer(){
 		return m_players[m_activePlayer].get();
-	}
-
-	const Player* Game::GetActivePlayer(){
-		return ActivePlayer();
 	}
 
 	bool Game::Start(){
@@ -100,6 +100,11 @@ namespace Bilky{
 		SetState(State::WaitingForDealerTrade);
 	}
 
+	void Game::RoundEnd() {
+		Round* currentRound = GetCurrentRound();
+		currentRound->SetComplete();
+	}
+
 	void Game::NewTrick() {
 		RoundReference currentRound = m_rounds.back();
 		
@@ -108,7 +113,7 @@ namespace Bilky{
 			NextActivePlayer();
 			m_startingPlayer = m_activePlayer;
 		}
-		else { //get the winning player from the last trick
+		else { //the winning player from the last trick goes first
 			m_startingPlayer = currentRound->GetCurrentTrick()->GetWinningPlayer()->GetId();
 			m_activePlayer = m_startingPlayer;
 		}
@@ -118,11 +123,76 @@ namespace Bilky{
 		SetState(State::WaitingForActivePlayer);
 	}
 
+	void Game::TrickEnd() {
+		Round* currentRound = GetCurrentRound();
+		Trick* currentTrick = currentRound->GetCurrentTrick();
+
+		currentTrick->SetComplete();
+
+		//all tricks have been completed, start a new round
+		if (currentRound->GetNumTricks() == currentRound->GetHandSize()) {
+			RoundEnd();
+		}
+		else { //else start a new trick
+			NewTrick();
+		}
+	}
+
 	Dealer* Game::GetDealer(){
 		return &m_dealer;
 	}
 
-	bool Game::TradeCards(const Player* player, ICardCollection* cards){
+	bool Game::PlayCard(Player* player, Card* card) {
+		if (m_gameState != State::WaitingForActivePlayer)
+			return false;
+
+		if (player == GetActivePlayer()) {
+			if (!PlayIsValid(player, card))
+				return false;
+
+			Trick* currentTrick = (Trick*)GetCurrentRound()->GetCurrentTrick();
+			currentTrick->CardPlay(player, card);
+			player->GetHand()->Remove(card);
+
+			NextActivePlayer();
+
+			if (m_activePlayer == m_startingPlayer)
+				TrickEnd();
+
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	bool Game::PlayIsValid(Player* player, Card* card) const {
+		const Trick* currentTrick = GetCurrentRound()->GetCurrentTrick();
+		const ICardCollection* playerHand = player->GetHand();
+
+		//player may always play the lowest card in their hand
+		size_t handSize = playerHand->NumCards();
+		bool cardIsLowest = true;
+		for (size_t i = 0; i < handSize; i++) {
+			if (playerHand->GetCard(i)->GetValue() < card->GetValue()) {
+				cardIsLowest = false;
+				break;
+			}
+		}
+		
+		if (cardIsLowest) return true;
+
+		// if the card is not the lowest then iat must be greater than or equal to the leading card for the current trick
+		const Card* leadCard = currentTrick->GetLeadCard();
+		if (!leadCard) {
+			return true;
+		}
+		else {
+			return card->GetValue() >= leadCard->GetValue();
+		}
+	}
+
+	bool Game::TradeCards(Player* player, ICardCollection* cards){
 		if (m_gameState == State::WaitingForDealerTrade)
 			return DealerTradeCards(player, cards);
 		else if (m_gameState == State::WaitingForPlayerTrade)
@@ -135,7 +205,7 @@ namespace Bilky{
 		Round* round = (Round*)GetCurrentRound();
 		round->CardTrade(player, cards);
 
-		player->Hand()->Remove(cards);
+		player->GetHand()->Remove(cards);
 
 		size_t numCards = cards->NumCards();
 		for (size_t i = 0; i < numCards; i++){
@@ -145,14 +215,12 @@ namespace Bilky{
 		NextActivePlayer();
 	}
 
-	bool Game::DealerTradeCards(const Player* player, ICardCollection* cards){
-		Player* activePlayer = ActivePlayer();
-
-		if (player == activePlayer){
+	bool Game::DealerTradeCards(Player* player, ICardCollection* cards){
+		if (player == GetActivePlayer()){
 			Round* round = (Round*)GetCurrentRound();
 			round->SetTradeLimit(cards->NumCards());
 
-			PerformCardTrade(activePlayer, cards);
+			PerformCardTrade(player, cards);
 
 			SetState(State::WaitingForPlayerTrade);
 
@@ -163,15 +231,13 @@ namespace Bilky{
 		}
 	}
 
-	bool Game::PlayerTradeCards(const Player* player, ICardCollection* cards){
-		Player* activePlayer = ActivePlayer();
-
+	bool Game::PlayerTradeCards(Player* player, ICardCollection* cards){
 		if (player == GetActivePlayer()){
 			Round* round = (Round*)GetCurrentRound();
 			if (cards->NumCards() > round->GetTradeLimit())
 				return false;
 
-			PerformCardTrade(activePlayer, cards);
+			PerformCardTrade(player, cards);
 
 			if (m_activePlayer == m_startingPlayer)
 				NewTrick();
@@ -191,7 +257,7 @@ namespace Bilky{
 		}
 	}
 
-	const Round* Game::GetCurrentRound(){
+	Round* Game::GetCurrentRound() const{
 		if (m_rounds.size() == 0){
 			return nullptr;
 		}
@@ -200,7 +266,7 @@ namespace Bilky{
 		}
 	}
 
-	const Round* Game::GetRound(size_t index){
+	Round* Game::GetRound(size_t index){
 		return m_rounds[index].get();
 	}
 	size_t Game::GetNumRounds() const{

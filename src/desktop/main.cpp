@@ -6,7 +6,7 @@
 
 void CardDelt(Bilky::Player* player, Bilky::Card* card);
 void StateChange(Bilky::Game::State oldState, Bilky::Game::State newState);
-void Trade(Bilky::Game& game, const Bilky::Player*, size_t numCards);
+void Trade(Bilky::Game& game, Bilky::Player*, size_t numCards);
 
 
 int main(int argc, char** argv){
@@ -78,7 +78,7 @@ void StateChange(Bilky::Game::State oldState, Bilky::Game::State newState){
 	std::cout << "Game State Change: " << GetStateName(oldState) << "  -->  " << GetStateName(newState) << std::endl;
 }
 
-void Trade(Bilky::Game& game, const Bilky::Player* player, size_t numCards){
+void Trade(Bilky::Game& game, Bilky::Player* player, size_t numCards){
 	Bilky::CardCollection trade;
 
 	for (size_t i = 0; i < numCards; i++){

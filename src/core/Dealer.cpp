@@ -45,7 +45,7 @@ namespace Bilky{
 	Card* Dealer::DealCardToPlayer(Player* player){
 		if (m_deck.NumCards() > 0){
 
-		ICardCollection* playerHand = player->Hand();
+		ICardCollection* playerHand = player->GetHand();
 			
 		Card* card = m_deck.RemoveCard(0);
 		playerHand->AddCard(card);

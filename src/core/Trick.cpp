@@ -11,19 +11,19 @@ namespace Bilky {
 		m_isComplete = false;
 	}
 
-	const Player* Trick::GetLeadPlayer() const {
+	Player* Trick::GetLeadPlayer() const {
 		return m_leadPlayer;
 	}
 
-	const Card* Trick::GetLeadCard() const {
+	Card* Trick::GetLeadCard() const {
 		return m_leadCard;
 	}
 
-	const Player* Trick::GetWinningPlayer() const {
+	Player* Trick::GetWinningPlayer() const {
 		return m_winningPlayer;
 	}
 
-	const Card* Trick::GetWinningCard() const {
+	Card* Trick::GetWinningCard() const {
 		return m_winningCard;
 	}
 
@@ -47,7 +47,7 @@ namespace Bilky {
 		m_plays[player] = card;
 	}
 
-	const Card* Trick::GetCardForPlayer(Player* player) const {
+	Card* Trick::GetCardForPlayer(Player* player) const {
 		auto result = m_plays.find(player);
 
 		if (result == m_plays.end()) {
@@ -61,7 +61,7 @@ namespace Bilky {
 	bool Trick::IsComplete() const {
 		return m_isComplete;
 	}
-	void Trick::SetComplete(bool complete) {
-		m_isComplete = complete;
+	void Trick::SetComplete() {
+		m_isComplete = true;
 	}
 }

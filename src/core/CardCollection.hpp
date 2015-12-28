@@ -18,6 +18,7 @@ namespace Bilky{
 		virtual void Shuffle() override;
 		virtual void Assign(ICardCollection* collection) override;
 		virtual void Remove(ICardCollection* collection) override;
+		virtual bool Remove(Card* card) override;
 
 	protected:
 		typedef std::deque<Card*> CardVector;

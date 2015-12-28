@@ -14,13 +14,14 @@ namespace Bilky{
 	public:
 		void Reset();
 		uint32_t GetScore();
+		void SetScore(size_t score);
 		std::string GetName() const;
 
 		uint32_t GetId() const;
 		void Setid(uint32_t id);
 
-		const ICardCollection* GetHand() const;
-		ICardCollection* Hand();
+		ICardCollection* GetHand();
+
 
 	private:
 		uint32_t m_score;

@@ -14,6 +14,7 @@ namespace Bilky{
 		virtual void Shuffle() = 0;
 		virtual void Assign(ICardCollection* collection) = 0;
 		virtual void Remove(ICardCollection* collection) = 0;
+		virtual bool Remove(Card* card) = 0;
 	};
 }
 

@@ -17,11 +17,7 @@ namespace Bilky{
 		return m_name;
 	}
 
-	const ICardCollection* Player::GetHand() const{
-		return &m_hand;
-	}
-
-	ICardCollection* Player::Hand(){
+	ICardCollection* Player::GetHand(){
 		return &m_hand;
 	}
 
@@ -35,5 +31,9 @@ namespace Bilky{
 
 	void Player::Setid(uint32_t id) {
 		m_id = id;
+	}
+
+	void Player::SetScore(size_t score) {
+		m_score = score;
 	}
 }

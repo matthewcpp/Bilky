@@ -12,19 +12,19 @@ namespace Bilky{
 		Trick();
 
 	public:
-		const Player* GetLeadPlayer() const;
-		const Card* GetLeadCard() const;
+		Player* GetLeadPlayer() const;
+		Card* GetLeadCard() const;
 
-		const Player* GetWinningPlayer() const ;
-		const Card* GetWinningCard() const;
+		Player* GetWinningPlayer() const ;
+		Card* GetWinningCard() const;
 
 		size_t GetNumPlays() const;
 
 		void CardPlay(Player* player, Card* card);
-		const Card* GetCardForPlayer(Player* player) const;
+		Card* GetCardForPlayer(Player* player) const;
 
 		bool IsComplete() const;
-		void SetComplete(bool complete = true);
+		void SetComplete();
 
 	private:
 		typedef std::map<Player*, Card*> PlayerCardMap;
