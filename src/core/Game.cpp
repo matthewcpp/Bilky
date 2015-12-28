@@ -6,22 +6,8 @@ namespace Bilky{
 		m_gameState = State::Stopped;
 	}
 
-	Player* Game::CreatePlayer(const std::string& name){
-		PlayerReference newPlayer;
-		if (m_gameState == State::Stopped){
-			newPlayer.reset(new Player(name, m_players.size()));
-			m_players.push_back(newPlayer);
-		}
-
-		return newPlayer.get();
-	}
-
-	Player* Game::GetPlayer(size_t index) const {
-		return m_players[index].get();
-	}
-
-	size_t Game::GetNumPlayers() const{
-		return m_players.size();
+	Roster* Game::GetRoster() {
+		return &m_roster;
 	}
 
 	Game::State Game::GetState() const{
@@ -29,11 +15,11 @@ namespace Bilky{
 	}
 
 	Player* Game::GetActivePlayer(){
-		return m_players[m_activePlayer].get();
+		return m_roster.GetPlayer(m_currentPlayer);
 	}
 
 	bool Game::Start(){
-		if (m_players.size() < 2){
+		if (m_roster.GetNumPlayers() < 2){
 			return false;
 		}
 
@@ -44,7 +30,7 @@ namespace Bilky{
 		Reset();
 
 		//setup the deck for this game
-		m_dealer.CreateCardPool(m_players.size());
+		m_dealer.CreateCardPool(m_roster.GetNumPlayers());
 		
 		NewRound(5);
 
@@ -61,39 +47,38 @@ namespace Bilky{
 	}
 
 	void Game::Reset(){
-		for (auto& player : m_players){
-			player->Reset();
-		}
+		m_roster.Reset();
 
 		m_rounds.clear();
 		m_dealer.Clear();
 
-		m_activePlayer = 0;
+		m_currentPlayer = 0;
 	}
 
 	void Game::NewRound(uint32_t handSize){
 		SetState(State::DealingHands);
 		m_dealer.Reset();
+		m_roster.GetActivePlayers(m_activePlayers);
 
 		//first round will start with a randomized lead player
 		if (m_rounds.size() == 0) {
-			m_startingPlayer = rand() % m_players.size();
+			m_startingPlayer = rand() % m_activePlayers.size();
 		}
 		else { //otherwise get the winner from the last round
 			m_startingPlayer = m_rounds.back()->GetWinningPlayer()->GetId();
 		}
 
-		m_activePlayer = m_startingPlayer;
+		m_currentPlayer = m_startingPlayer;
 
-		Round* round = new Round(m_players[m_startingPlayer].get(), handSize);
+		Round* round = new Round(m_roster.GetPlayer(m_startingPlayer), handSize);
 		RoundReference ref;
 		ref.reset(round);
 		m_rounds.push_back(ref);
 
 		//deal cards to players
 		for (uint32_t i = 0; i < handSize; i++){
-			for (auto& player : m_players){
-				m_dealer.DealCardToPlayer(player.get());
+			for (auto& player : m_activePlayers){
+				m_dealer.DealCardToPlayer(player);
 			}
 		}
 
@@ -111,11 +96,11 @@ namespace Bilky{
 		//if this is the first trick in a round, then the player following the dealer goes first
 		if (currentRound->GetNumTricks() == 0) {
 			NextActivePlayer();
-			m_startingPlayer = m_activePlayer;
+			m_startingPlayer = m_currentPlayer;
 		}
 		else { //the winning player from the last trick goes first
 			m_startingPlayer = currentRound->GetCurrentTrick()->GetWinningPlayer()->GetId();
-			m_activePlayer = m_startingPlayer;
+			m_currentPlayer = m_startingPlayer;
 		}
 
 		currentRound->CreateTrick();
@@ -156,7 +141,7 @@ namespace Bilky{
 
 			NextActivePlayer();
 
-			if (m_activePlayer == m_startingPlayer)
+			if (m_currentPlayer == m_startingPlayer)
 				TrickEnd();
 
 			return true;
@@ -239,7 +224,7 @@ namespace Bilky{
 
 			PerformCardTrade(player, cards);
 
-			if (m_activePlayer == m_startingPlayer)
+			if (m_currentPlayer == m_startingPlayer)
 				NewTrick();
 
 			return true;
@@ -250,10 +235,10 @@ namespace Bilky{
 	}
 
 	void Game::NextActivePlayer(){
-		m_activePlayer += 1;
+		m_currentPlayer += 1;
 
-		if (m_activePlayer == m_players.size()){
-			m_activePlayer = 0;
+		if (m_currentPlayer == m_activePlayers.size()){
+			m_currentPlayer = 0;
 		}
 	}
 

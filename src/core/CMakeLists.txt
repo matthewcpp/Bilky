@@ -21,6 +21,9 @@ list(APPEND bilky_files ${CMAKE_CURRENT_SOURCE_DIR}/Game.cpp)
 list(APPEND bilky_files ${CMAKE_CURRENT_SOURCE_DIR}/Player.hpp)
 list(APPEND bilky_files ${CMAKE_CURRENT_SOURCE_DIR}/Player.cpp)
 
+list(APPEND bilky_files ${CMAKE_CURRENT_SOURCE_DIR}/Roster.hpp)
+list(APPEND bilky_files ${CMAKE_CURRENT_SOURCE_DIR}/Roster.cpp)
+
 list(APPEND bilky_files ${CMAKE_CURRENT_SOURCE_DIR}/Round.hpp)
 list(APPEND bilky_files ${CMAKE_CURRENT_SOURCE_DIR}/Round.cpp)
 

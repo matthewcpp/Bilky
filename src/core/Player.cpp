@@ -36,4 +36,8 @@ namespace Bilky{
 	void Player::SetScore(size_t score) {
 		m_score = score;
 	}
+
+	bool Player::IsActive() const {
+		return m_score < 21;
+	}
 }

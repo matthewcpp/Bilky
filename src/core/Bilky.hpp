@@ -5,5 +5,8 @@
 #include "Player.hpp"
 #include "CardCollection.hpp"
 #include "Dealer.hpp"
+#include "Round.hpp"
+#include "Trick.hpp"
+#include "Roster.hpp"
 
 #endif

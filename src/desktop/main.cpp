@@ -14,8 +14,8 @@ int main(int argc, char** argv){
 
 	Bilky::Game game;
 	
-	game.CreatePlayer("Matthew");
-	game.CreatePlayer("Tony");
+	game.GetRoster()->CreatePlayer("Matthew");
+	game.GetRoster()->CreatePlayer("Tony");
 
 	game.BindStateChangeCallback(&StateChange);
 	game.GetDealer()->BindCardDealCallback(&CardDelt);

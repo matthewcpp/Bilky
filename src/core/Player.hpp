@@ -22,6 +22,8 @@ namespace Bilky{
 
 		ICardCollection* GetHand();
 
+		bool IsActive() const;
+
 
 	private:
 		uint32_t m_score;

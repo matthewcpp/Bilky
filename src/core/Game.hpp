@@ -9,6 +9,7 @@
 #include "Player.hpp"
 #include "Dealer.hpp"
 #include "Round.hpp"
+#include "Roster.hpp"
 
 namespace Bilky {
 
@@ -31,13 +32,10 @@ namespace Bilky {
 		bool Start();
 		bool Stop();
 
-		Player* CreatePlayer(const std::string& name);
-		Player* GetPlayer(size_t index) const;
-		size_t GetNumPlayers() const;
-
-		virtual State GetState() const;
+		State GetState() const;
 
 		Dealer* GetDealer();
+		Roster* GetRoster();
 
 		Round* GetCurrentRound() const;
 		Round* GetRound(size_t index);
@@ -69,8 +67,7 @@ namespace Bilky {
 		virtual void SetState(State newState);
 
 	private:
-		typedef std::shared_ptr<Player> PlayerReference;
-		typedef std::vector<PlayerReference> PlayerVector;
+
 
 		typedef std::shared_ptr<Round> RoundReference;
 		typedef std::vector<RoundReference> RoundVector;
@@ -79,15 +76,17 @@ namespace Bilky {
 
 	private:
 		Dealer m_dealer;
+		Roster m_roster;
 
-		PlayerVector m_players;
 		RoundVector m_rounds;
 
 		size_t m_startingPlayer;
-		size_t m_activePlayer;
+		size_t m_currentPlayer;
 
 		State m_gameState;
 		StateChangeCallbackVector m_stateChangeCallbacks;
+
+		PlayerVector m_activePlayers;
 	};
 
 
