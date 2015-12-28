@@ -1,0 +1,8 @@
+set (app_files)
+
+list(APPEND app_files ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
+
+add_executable(Bilky_app ${app_files})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../core)
+
+target_link_libraries(Bilky_app Bilky)
