@@ -87,7 +87,18 @@ namespace Bilky{
 
 	void Game::RoundEnd() {
 		Round* currentRound = GetCurrentRound();
+		
 		currentRound->SetComplete();
+
+		Player* winningPlayer = currentRound->GetCurrentTrick()->GetWinningPlayer();
+		uint32_t winningCardValue = currentRound->GetCurrentTrick()->GetWinningCard()->GetValue();
+
+		// if the last trick was won with an ace (highly unlikely) the hand size and point value is 11
+		uint32_t points = (winningCardValue == 14) ? 11 : std::max(winningCardValue, 10U);
+
+		winningPlayer->SetScore(winningPlayer->GetScore() + points);
+
+		NewRound(points);
 	}
 
 	void Game::NewTrick() {
@@ -167,7 +178,7 @@ namespace Bilky{
 		
 		if (cardIsLowest) return true;
 
-		// if the card is not the lowest then iat must be greater than or equal to the leading card for the current trick
+		// if the card is not the lowest then it must be greater than or equal to the leading card for the current trick
 		const Card* leadCard = currentTrick->GetLeadCard();
 		if (!leadCard) {
 			return true;
